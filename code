@@ -1,0 +1,44 @@
+import java.awt.event.*;
+import java.io.*;
+import javax.swing.*;
+
+public class KeyLoggerDemo extends JFrame {
+
+    private BufferedWriter writer;
+
+    public KeyLoggerDemo() {
+        super("Safe Key Logger Demo");
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JTextArea textArea = new JTextArea();
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                try {
+                    // Append typed character to the file
+                    writer.write(c);
+                    writer.flush(); // force write to disk immediately
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        add(new JScrollPane(textArea));
+
+        try {
+            // Open file in append mode
+            writer = new BufferedWriter(new FileWriter("keystrokes_log.txt", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new KeyLoggerDemo();
+    }
+}
